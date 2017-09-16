@@ -1,4 +1,4 @@
-var version = '0.1.0';
+var version = '0.1.5';
 var is_playing = false;
 var player;
 var hit = 0;
@@ -30,11 +30,11 @@ function init() {
 			};
 	})();
 	load_media();
-	buttons_drawX = new Array();
-	buttons_drawY = new Array();
-	buttons_width = new Array();
-	buttons_height = new Array();
-	buttons_status = new Array();
+	buttons_drawX = [];
+	buttons_drawY = [];
+	buttons_width = [];
+	buttons_height = [];
+	buttons_status = [];
 	is_menu = true;
 	menu_status = 'main';
 	menu_sprite.addEventListener("load",start_loop,false);
@@ -77,21 +77,23 @@ function load_media() {
 
 function menu() {
 	main_menu_buttons = new Array("New Game");
-	pause_menu_buttons = new Array("Return","New Game");
+	pause_menu_buttons = ["Return","New Game"];
 	game_over_menu_buttons = main_menu_buttons;
-	if(menu_status == "main")
+
+    var menu_buttons="";
+	if(menu_status === "main")
 	{
 		menu_buttons = main_menu_buttons;
 	}
-	else if(menu_status == "pause")
+	else if(menu_status === "pause")
 	{
-		var menu_buttons = pause_menu_buttons;	
+		menu_buttons = pause_menu_buttons;
 	}
-	else if(menu_status == "game_over")
+	else if(menu_status === "game_over")
 	{
-		var menu_buttons = game_over_menu_buttons;
+		menu_buttons = game_over_menu_buttons;
 	}
-	if(menu_status == "game_over")
+	if(menu_status === "game_over")
 	{
 		main_ctx.textBaseline = "middle";
 		main_ctx.textAlign = "center";
@@ -116,7 +118,7 @@ function menu() {
 		var width = 200;
 		var height = 50;
 		
-		if(buttons_status[i] == undefined)
+		if(buttons_status[i] === undefined)
 		{
 			buttons_status[i] = "normal";
 			buttons_drawX[i] = drawX;
@@ -125,13 +127,13 @@ function menu() {
 			buttons_height[i] = height;
 		}
 		
-		if(buttons_status[i] == "click")
+		if(buttons_status[i] === "click")
 		{
-			if(i == 0 && menu_status == "main" || i == 1 && menu_status == "pause" || i == 0 && menu_status == "game_over")
+			if(i == 0 && menu_status === "main" || i == 1 && menu_status === "pause" || i === 0 && menu_status === "game_over")
 			{
 				new_game();
 			}
-			if(i == 0 && menu_status == "pause")
+			if(i === 0 && menu_status === "pause")
 			{
 				is_menu = false;
 			}
@@ -139,11 +141,11 @@ function menu() {
 			buttons_status[i] = "hover";
 		}
 		
-		if(buttons_status[i] == "hover")
+		if(buttons_status[i] === "hover")
 		{
 			main_ctx.drawImage(button_press_sprite,drawX,drawY,width,height);
 		}
-		if(buttons_status[i] == "normal")
+		if(buttons_status[i] === "normal")
 		{
 			main_ctx.drawImage(button_sprite,drawX,drawY,width,height);
 		}
@@ -157,9 +159,9 @@ function menu() {
 		
 		var userNameCookie = Cookie.get('username');
 		
-		if(userNameCookie == null)
+		if(userNameCookie === null)
 		{
-			if(playerName == '')
+			if(playerName === '')
 			{
 				setCookie();
 			}
@@ -171,9 +173,12 @@ function menu() {
 	}
 }
 
-function mouse(type,e) {
-	var x = (e.pageX - document.getElementById('game_object').offsetLeft) - document.getElementById('main').offsetLeft;
-	var y = (e.pageY - document.getElementById('game_object').offsetTop) - document.getElementById('main').offsetTop;
+function mouse(type,evt) {
+
+	var rect = main_canvas.getBoundingClientRect();
+
+    var x = evt.clientX - rect.left;
+    var y = evt.clientY - rect.top;
 	
 	for(var i = 0; i < buttons_status.length; i++)
 	{
@@ -181,7 +186,7 @@ function mouse(type,e) {
 		   y <= buttons_drawY[i] + buttons_height[i] && y >= buttons_drawY[i]
   		)
   		{
-  			if (type == 'move' && buttons_status[i] != "click")
+  			if (type === 'move' && buttons_status[i] !== "click")
 				buttons_status[i] = "hover";
 			else
 				buttons_status[i]="click";
@@ -191,19 +196,7 @@ function mouse(type,e) {
 			buttons_status[i] = "normal";
 		}
 	}
-	
-	//document.getElementById('x').innerHTML = x;
-	//document.getElementById('y').innerHTML = y;
 }
-
-/*function mouseMoveHandler(e) {
-	var relativeY = e.clientY - canvas.offsetLeft;
-	var relativeX = e.clientX - canvas.offsetLeft;
-	if(relativeX > 0 && relativeX < canvas.width) {
-		paddleX = relativeX - paddleWidth/2;
-	}
-}
-*/
 
 function Player() {
 	this.life = 100;
@@ -219,13 +212,13 @@ function Player() {
 }
 
 Player.prototype.draw = function() {
-	if(this.is_dead == false)
+	if(this.is_dead === false)
 	{
 		this.check_keys();
 		main_ctx.drawImage(main_sprite,this.drawX,this.drawY)
 		main_ctx.drawImage(gun_sprite,this.drawX + 60,this.drawY - 20,30,100);
 		
-		if(sendTrue == 1)
+		if(sendTrue === 1)
 		{
 			sendTrue = 0;
 		}
@@ -251,12 +244,11 @@ Player.prototype.draw = function() {
 		is_menu = true;
 		menu_status = "game_over";
 		
-		if(score >= 100 && score <= 2500)
+		if(score >= 0 && score <= 4000)
 			{
 				try
 				{
 					ajaxFunction(playerName,score);
-					//alert('Ihr Score wurde gespeichert. Drücken Sie F5 um die Seite neu zu laden oder spielen Sie eine Neue Runde.');
 				}
 				catch(e){alert('Da war ein Fehler')}
 			}
@@ -264,15 +256,8 @@ Player.prototype.draw = function() {
 };
 
 Player.prototype.check_keys = function() {
-	/*if(this.is_downkey == true)
-	{
-		this.drawY += this.speed;
-	}*/
-	/*if(this.is_upkey == true && this.drawY >= 450)
-	{
-		
-	}*/
-	if(this.is_leftkey == true)
+
+	if(this.is_leftkey === true)
 	{
 		this.drawX -= this.speed;
 		if(this.drawX <= -20)
@@ -280,7 +265,7 @@ Player.prototype.check_keys = function() {
 			this.drawX = -20;
 		}
 	}
-	if(this.is_rightkey == true)
+	if(this.is_rightkey === true)
 	{
 		this.drawX += this.speed;
 		if(this.drawX >= 750)
@@ -288,7 +273,7 @@ Player.prototype.check_keys = function() {
 			this.drawX = 750;
 		}
 	}
-	if(this.is_space == true && this.shoot_wait <= 0)
+	if(this.is_space === true && this.shoot_wait <= 0)
 	{
 		bullets[bullets.length] = new Bullet(this.drawX + 68,this.drawY - 30,true);
 		this.shoot_wait = 20;
@@ -312,7 +297,7 @@ function Enemy() {
 }
 
 Enemy.prototype.draw = function() {
-	if(this.is_dead == false)
+	if(this.is_dead === false)
 	{
 		this.ai();
 		main_ctx.drawImage(fluzeug_sprite,this.drawX,this.drawY);
@@ -354,14 +339,14 @@ Enemy.prototype.ai = function() {
 		this.speed = 3 + Math.random() * 5;
 	}
 	
-	if(Math.round(Math.random()*100) == 50)
+	if(Math.round(Math.random()*100) === 50)
 	{
 		bullets[bullets.length] = new Bullet(this.drawX+60,this.drawY + 40);
 	}
 };
 
 function Bullet(x,y,is_Player) {
-	if(is_Player == true)
+	if(is_Player === true)
 	{
 		try {shotaudio.currentTime = 0;} catch(e){}
 		shotaudio.volume = soundVol;
@@ -382,18 +367,18 @@ function Bullet(x,y,is_Player) {
 }
 
 Bullet.prototype.draw = function() {
-	if(this.explodet == false && this.is_Player == false)
+	if(this.explodet === false && this.is_Player === false)
 	{
 		main_ctx.drawImage(bullet_sprite,this.drawX,this.drawY);
 	}
-	if(this.explodet == false && this.is_Player == true)
+	if(this.explodet === false && this.is_Player === true)
 	{
 		main_ctx.drawImage(laser_sprite,this.drawX,this.drawY);
 	}
 	
-	if(this.explodet == false)
+	if(this.explodet === false)
 	{
-		if(this.is_Player == true)
+		if(this.is_Player === true)
 		{
 			this.drawY -= this.speed;
 		}
@@ -403,21 +388,21 @@ Bullet.prototype.draw = function() {
 		}
 	}
 	
-	if(this.is_Player == false && this.drawX <= player.drawX + 90 && this.drawX + this.width >= player.drawX 
-	&& this.drawY <= player.drawY + 80 && this.drawY + this.height >= player.drawY && this.explodet == false)
+	if(this.is_Player === false && this.drawX <= player.drawX + 90 && this.drawX + this.width >= player.drawX
+	&& this.drawY <= player.drawY + 80 && this.drawY + this.height >= player.drawY && this.explodet === false)
 	{
 		player.life -= 10;
 		this.explodet = true;
 		this.wait = 50;
 	}
 	
-	if(this.is_Player == true)
+	if(this.is_Player === true)
 	{
 		for(var i=0; i < enemies.length; i++)
 		{
 			if(this.drawX <= enemies[i].drawX + 120 && this.drawX + this.width >= enemies[i].drawX 
-			&& this.drawY <= enemies[i].drawY + 50 && this.drawY + this.height >= enemies[i].drawY && this.explodet == false
-			&& enemies[i].is_dead == false)
+			&& this.drawY <= enemies[i].drawY + 50 && this.drawY + this.height >= enemies[i].drawY && this.explodet === false
+			&& enemies[i].is_dead === false)
 			{
 				this.explodet = true;
 				this.wait = 50;
@@ -428,7 +413,7 @@ Bullet.prototype.draw = function() {
 		}
 	}
 
-	if(this.explodet == true && this.wait > 0)
+	if(this.explodet === true && this.wait > 0)
 	{
 		main_ctx.drawImage(explosion_sprite,this.drawX,this.drawY,50,50);
 		this.wait--;
@@ -436,7 +421,7 @@ Bullet.prototype.draw = function() {
 };
 
 function check_wave() {
-	if(spawned_enemies == dead_enemies)
+	if(spawned_enemies === dead_enemies)
 	{
 		if(is_timeout)
 		{
@@ -454,7 +439,7 @@ function check_wave() {
 		else
 		{
 			is_timeout = true;
-			if(spawned_enemies == 0)
+			if(spawned_enemies === 0)
 			{
 				wave ++;
 				spawn_enemy(wave);
@@ -480,7 +465,7 @@ function spawn_enemy(n){
 function loop(){
 	main_ctx.clearRect(0,0,800,600);
 	
-	if(is_menu == false)
+	if(is_menu === false)
 	{
 		if(wave <= 3)
 		{
@@ -548,17 +533,15 @@ function loop(){
 }
 
 function new_game(){
-	
 	player = new Player();
-	enemies = new Array();
-	bullets = new Array();
+	enemies = [];
+	bullets = [];
 	dead_enemies = 0;
 	spawned_enemies = 0;
 	wave = 0;
 	score = 0;
 	is_menu = false;
 	is_timeout = false;
-
 }
 
 function start_loop(){
@@ -572,33 +555,33 @@ function stop_loop(){
 
 function key_down(e){
 	var key_id = e.keyCode || e.which;
-	if(key_id == 40 ) // downkey
+	if(key_id === 40 ) // downkey
 	{
 		player.is_downkey = true;
 		e.preventDefault();
 	}
-	if(key_id == 38 ) // upkey
+	if(key_id === 38 ) // upkey
 	{
 		player.is_upkey = true;
 		e.preventDefault();
 	}
-	if(key_id == 37 ) // leftkey
+	if(key_id === 37 ) // leftkey
 	{
 		player.is_leftkey = true;
 		e.preventDefault();
 	}
-	if(key_id == 39 ) // rightkey
+	if(key_id === 39 ) // rightkey
 	{
 		player.is_rightkey = true;
 		e.preventDefault();
 	}
-	if(key_id == 32) // Leertaste
+	if(key_id === 32) // Leertaste
 	{
 		player.is_space = true;
 		e.preventDefault();
 	}
 	
-	if(key_id == 27 || key_id == 80) // esc or p
+	if(key_id === 27 || key_id === 80) // esc or p
 	{
 		is_menu = true;
 		menu_status = 'pause';
@@ -608,29 +591,35 @@ function key_down(e){
 
 function key_up(e){
 	var key_id = e.keyCode || e.which;
-	if(key_id == 40 ) // downkey
+	if(key_id === 40 ) // downkey
 	{
 		player.is_downkey = false;
 		e.preventDefault();
 	}
-	if(key_id == 38 ) // upkey
+	if(key_id === 38 ) // upkey
 	{
 		player.is_upkey = false;
 		e.preventDefault();
 	}
-	if(key_id == 37 ) // leftkey
+	if(key_id === 37 ) // leftkey
 	{
 		player.is_leftkey = false;
 		e.preventDefault();
 	}
-	if(key_id == 39 ) // rightkey
+	if(key_id === 39 ) // rightkey
 	{
 		player.is_rightkey = false;
 		e.preventDefault();
 	}
-	if(key_id == 32 ) // rightkey
+	if(key_id === 32 ) // spacebar
 	{
 		player.is_space = false;
+
+		if(player.shoot_wait <= 0){
+            player.shoot_wait = 5
+		}
+		console.log(player.shoot_wait);
+
 		e.preventDefault();
 	}
 	
@@ -640,19 +629,24 @@ function ajaxFunction(playerName20,score10){
 	// Request erzeugen
 	if (window.XMLHttpRequest) {
 		ajaxRequest = new XMLHttpRequest(); // Mozilla, Safari, Opera
+		console.log("Chrome Request");
 	} else if (window.ActiveXObject) {
 		try {
 			ajaxRequest = new ActiveXObject('Msxml2.XMLHTTP'); // IE 5
+            console.log("IE5 Request");
 		} catch (e) {
 			try {
 				ajaxRequest = new ActiveXObject('Microsoft.XMLHTTP'); // IE 6
-			} catch (e) {}
+                console.log("IE6 Request");
+			} catch (e) {
+				console.log('Error-Request:',e);
+			}
 		}
 	}
 	
-	if(sendTrue != 1)
+	if(sendTrue !== 1)
 	{
-		if(playerName20 != playerName || score10 != score || menu_status != "game_over")
+		if(playerName20 !== playerName || score10 !== score || menu_status !== "game_over")
 		{
 			alert("Schwach!");
 		}
@@ -663,8 +657,15 @@ function ajaxFunction(playerName20,score10){
 			ajaxRequest.open("post",url,true);
 			ajaxRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 			ajaxRequest.send(string);
+
+			ajaxRequest.onreadystatechange = function() {
+                if (ajaxRequest.readyState === 4) {
+                    if (ajaxRequest.status !== 200)
+                        console.log('ajaxErrorCode: ' + ajaxRequest.status);
+                }
+            };
+
 			sendTrue = 1;
-			//alert("Daten wurden eingetragen!");
 		}
 	}
 }
@@ -673,9 +674,9 @@ function media(media){
 	
 	bgaudio.volume = 0.1;
 	
-	if(media == 'bgsong')
+	if(media === 'bgsong')
 	{
-		if(play == true)
+		if(play === true)
 		{
 			bgaudio.play();
 			play = false;
@@ -688,9 +689,9 @@ function media(media){
 		bgaudio.loop = true;
 	}
 
-	if(media == 'mute')
+	if(media === 'mute')
 	{
-		if(ismute == false)
+		if(ismute === false)
 		{
 			soundVol = 0;
 			ismute = true;

@@ -15,7 +15,7 @@
 	<script src="/!script/js/ajax/ajax_loader.class.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		var Obj1 = new AJAXLOADER_CLASS;
-		Obj1.loadInLoop(2000,'/!script/php/score_handler/score_loader.script.js.php','table=robots123_highScore','ajaxReturnRob');
+		Obj1.loadInLoop(10000,'/!script/php/score_handler/score_loader.script.js.php','table=robots123_highScore','ajaxReturnRob');
 	</script>
 </head>
 <body>
@@ -28,18 +28,16 @@
 	<div id="container">
 		<div class="inside">
 			<div id="game_object">
-				<canvas width="800" height="600px" id="background_canvas" onmousemove='mouse(event)'></canvas>
+				<canvas width="800" height="600px" id="background_canvas"></canvas>
 				<canvas width="800" height="600px" id="main_canvas" onmousemove='mouse("move",event)' onclick='mouse("click", event)'>Leider kann das Spiel nicht in Ihrem Brwser aufgerufen werden</canvas>
 				<script type="text/javascript" src="files/js/robots123.js"></script>
 			</div>
-		</div>
-	</div>
-	<div id="right">
-		<div class="inside">
-			<div class="score_box">
-				<h2>Score:</h2>
-				<div id="ajaxReturnRob"></div>
-			</div>
+            <div id="SCRORE">
+                <div class="score_box">
+                    <h2>Score:</h2>
+                    <div id="ajaxReturnRob"></div>
+                </div>
+            </div>
 		</div>
 	</div>
 </div>
