@@ -1,5 +1,5 @@
-var version = '0.1.5';
-console.log("Game version:",version);
+var version = '0.1.5.171003';
+console.log("v",version);
 var is_playing = false;
 var player;
 var hit = 0;
@@ -18,7 +18,7 @@ function init() {
 	main_canvas = document.getElementById('main_canvas');
 	main_ctx = main_canvas.getContext('2d');
 	
-	document.addEventListener("keydown",key_down, false);
+	document.addEventListener("keydown",key_down,false);
 	document.addEventListener("keyup",key_up, false);
 	requestframe = (function(){
 		return window.requestAnimationFrame ||
@@ -89,19 +89,17 @@ function menu() {
 	}
 	else if(menu_status === "game_over"){
 		menu_buttons = game_over_menu_buttons;
-	}
-	if(menu_status === "game_over"){
-		main_ctx.textBaseline = "middle";
-		main_ctx.textAlign = "center";
-		main_ctx.font = "70px Arial";
-		main_ctx.fillStyle = "red";
-		main_ctx.fillText("Game Over", 800 / 2, 220);
-		
-		main_ctx.textBaseline = "middle";
-		main_ctx.textAlign = "center";
-		main_ctx.font = "50px Arial";
-		main_ctx.fillStyle = "red";
-		main_ctx.fillText("Wave: " + wave + " Score: " + score, 800 / 2, 290);
+        main_ctx.textBaseline = "middle";
+        main_ctx.textAlign = "center";
+        main_ctx.font = "70px Arial";
+        main_ctx.fillStyle = "red";
+        main_ctx.fillText("Game Over", 800 / 2, 220);
+
+        main_ctx.textBaseline = "middle";
+        main_ctx.textAlign = "center";
+        main_ctx.font = "50px Arial";
+        main_ctx.fillStyle = "red";
+        main_ctx.fillText("Wave: " + wave + " Score: " + score, 800 / 2, 290);
 	}
 
 	background_ctx.drawImage(menu_sprite,0,0,800,600);
@@ -145,7 +143,7 @@ function menu() {
 		main_ctx.fillText(menu_buttons[i],drawX + width / 2,drawY+height/2);
 		
 		var userNameCookie = Cookie.get('username');
-		
+
 		if(userNameCookie === null){
 			if(playerName === ''){
 				setCookie();
@@ -570,8 +568,11 @@ function ajaxFunction(playerName20,score10){
 
 			ajaxRequest.onreadystatechange = function() {
                 if (ajaxRequest.readyState === 4) {
-                    if (ajaxRequest.status !== 200)
+                    if (ajaxRequest.status !== 200){
                         console.log('ajaxErrorCode: ' + ajaxRequest.status);
+                    } else {
+                    	console.log(ajaxRequest.responseText);
+					}
                 }
             };
 			sendTrue = 1;
@@ -617,7 +618,11 @@ function setCookie(){
 	var datum = new Date();
 	var jahrPlus = datum.getFullYear()+1;
 	datum.setFullYear(jahrPlus);
-	playerName = prompt('Bitte geben Sie Ihren Namen ein, um Ihren Score zu speichern.');			
+
+	if(typeof playerName !== "string" || playerName.length <= 0){
+        playerName = prompt('Bitte geben Sie Ihren Namen ein, um Ihren Score zu speichern.');
+	}
+
 	if(playerName.length >= 12){
 		playerName = playerName.substring(0, 12);
 		playerName = playerName.replace(/<\/?[^>]+(>|$)/g, "");
@@ -631,8 +636,9 @@ function setCookie(){
 			var cookies = {};
 			for(var i = 0; i < data.length; ++i) {
 				var tmp = data[i].split("=");
-				cookies[tmp[0]] = tmp[1];
+				cookies[tmp[0].trim()] = tmp[1];
 			}
+
 			if (name) {
 				return (cookies[name] || null);
 			} else{
