@@ -1,5 +1,5 @@
 # Robots123
-###Robots123 - First JavaScript Game
+### Robots123 - First JavaScript Game by LBeckX
 
 ---
 
