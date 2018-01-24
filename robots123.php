@@ -1,5 +1,8 @@
 <?php
 	require_once __DIR__ . '/../!script/php/client_handler/check_blocked_client.script.php';
+    require_once __DIR__ . '/../../!class/php/3rd_party/JShrink/src/JShrink/Minifier.php';
+    require_once __DIR__ . '/../../!class/php/3rd_party/php-packer/src/Packer.php';
+    $jsFile = __DIR__ . "/files/js/robots123.js";
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -15,7 +18,7 @@
 	<script src="/!script/js/ajax/ajax_loader.class.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		var Obj1 = new AJAXLOADER_CLASS;
-		Obj1.loadInLoop(10000,'/!script/php/score_handler/score_loader.script.js.php','table=robots123_highScore','ajaxReturnRob');
+		Obj1.loadInLoop(2000,'/!script/php/score_handler/score_loader.script.js.php','table=robots123_highScore','ajaxReturnRob');
 	</script>
 </head>
 <body>
@@ -30,7 +33,14 @@
 			<div id="game_object">
 				<canvas width="800" height="600px" id="background_canvas"></canvas>
 				<canvas width="800" height="600px" id="main_canvas" onmousemove='mouse("move",event)' onclick='mouse("click", event)'>Leider kann das Spiel nicht in Ihrem Brwser aufgerufen werden</canvas>
-				<script type="text/javascript" src="files/js/robots123.js"></script>
+                <script>
+                    <?php
+                    $js = \JShrink\Minifier::minify(file_get_contents($jsFile));
+                    $packer = new Tholu\Packer\Packer($js);
+                    $packedJS = $packer->pack();
+                    echo $packedJS;
+                    ?>
+                </script>
 			</div>
             <div id="SCRORE">
                 <div class="score_box">

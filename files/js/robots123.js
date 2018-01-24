@@ -561,7 +561,7 @@ function ajaxFunction(playerName20,score10){
 		}
 		else{
 			var string = "name=" + playerName20 + "&score=" + score10;
-			var url = '/!script/php/score_handler/score_safer.script.php';
+			var url = '/!script/php/score_handler/score_safer.script.php?table=robots123_highScore';
 			ajaxRequest.open("post",url,true);
 			ajaxRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 			ajaxRequest.send(string);
